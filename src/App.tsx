@@ -28,7 +28,8 @@ import {
   LogOut,
   Command,
   Heart,
-  ChevronDown
+  ChevronDown,
+  HelpCircle
 } from "lucide-react";
 
 // Import types
@@ -37,7 +38,10 @@ import {
   AttendanceRecord,
   PermissionForm,
   CashTransaction,
-  MeetingNote
+  MeetingNote,
+  ScheduleItem,
+  AnnouncementItem,
+  AgendaItem
 } from "./types";
 
 // Import mock data as initial states
@@ -47,7 +51,9 @@ import {
   initialCashTransactions,
   initialMeetingNotes,
   initialDocuments,
-  classRules
+  classRules,
+  initialAnnouncements,
+  initialAgendas
 } from "./data/mockData";
 
 // Import sub-components
@@ -62,6 +68,9 @@ import { CommunicationHub } from "./components/CommunicationHub";
 import { AnalyticsDashboard } from "./components/AnalyticsDashboard";
 import { DigitalLibrary } from "./components/DigitalLibrary";
 import { SettingsPanel } from "./components/SettingsPanel";
+import { ScheduleGuideModal } from "./components/ScheduleGuideModal";
+import { AnnouncementGuideModal } from "./components/AnnouncementGuideModal";
+import { AgendaGuideModal } from "./components/AgendaGuideModal";
 
 export default function App() {
   // --- Persistent Storage State ---
@@ -104,6 +113,25 @@ export default function App() {
     return saved ? JSON.parse(saved) : initialMeetingNotes;
   });
 
+  const [schedules, setSchedules] = useState<ScheduleItem[]>(() => {
+    const saved = localStorage.getItem("sma_schedules");
+    return saved ? JSON.parse(saved) : initialSchedules;
+  });
+
+  const [announcements, setAnnouncements] = useState<AnnouncementItem[]>(() => {
+    const saved = localStorage.getItem("sma_announcements");
+    return saved ? JSON.parse(saved) : initialAnnouncements;
+  });
+
+  const [agendas, setAgendas] = useState<AgendaItem[]>(() => {
+    const saved = localStorage.getItem("sma_agendas");
+    return saved ? JSON.parse(saved) : initialAgendas;
+  });
+
+  const [showScheduleGuide, setShowScheduleGuide] = useState(false);
+  const [showAnnouncementGuide, setShowAnnouncementGuide] = useState(false);
+  const [showAgendaGuide, setShowAgendaGuide] = useState(false);
+
   // Save states to localstorage for Offline local PWA capability
   useEffect(() => {
     localStorage.setItem("sma_students", JSON.stringify(students));
@@ -124,6 +152,18 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("sma_meeting_notes", JSON.stringify(meetingNotes));
   }, [meetingNotes]);
+
+  useEffect(() => {
+    localStorage.setItem("sma_schedules", JSON.stringify(schedules));
+  }, [schedules]);
+
+  useEffect(() => {
+    localStorage.setItem("sma_announcements", JSON.stringify(announcements));
+  }, [announcements]);
+
+  useEffect(() => {
+    localStorage.setItem("sma_agendas", JSON.stringify(agendas));
+  }, [agendas]);
 
   // --- UI/UX & Navigation States ---
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -183,6 +223,11 @@ export default function App() {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
+
+  const indonesianDays = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+  const todayIndonesian = indonesianDays[currentTime.getDay()];
+  const activeDay = (todayIndonesian === "Minggu" || todayIndonesian === "Sabtu") ? "Senin" : todayIndonesian;
+  const todaysSchedules = schedules.filter(sch => sch.day === activeDay);
 
   // --- Backup & Restore Controls ---
   const handleExportBackup = () => {
@@ -466,46 +511,34 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Today's Schedule and duty piket widgets */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  {/* Schedule */}
-                  <div className="sleek-card p-6 rounded-3xl shadow-sm hover:shadow-md transition-all duration-300">
-                    <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Jadwal Kelas Hari Ini</h3>
-                    <div className="flex flex-col gap-2 max-h-[180px] overflow-y-auto">
-                      {initialSchedules.slice(0, 3).map((sch) => (
-                        <div key={sch.id} className="p-3 bg-slate-50/60 dark:bg-slate-950/60 border border-slate-200/40 dark:border-slate-800/40 rounded-2xl flex justify-between items-center text-xs hover:scale-[1.01] transition-transform">
-                          <div>
-                            <strong className="text-slate-800 dark:text-slate-200 block">{sch.subject}</strong>
-                            <span className="text-slate-400 text-[10px] block mt-0.5">Pengampu: {sch.teacher}</span>
-                          </div>
-                          <span className="text-[10px] font-mono font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 px-2 py-0.5 rounded-lg border border-blue-100/30">{sch.time}</span>
-                        </div>
-                      ))}
-                    </div>
+                {/* Today's Schedule */}
+                <div className="sleek-card p-6 rounded-3xl shadow-sm hover:shadow-md transition-all duration-300">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                      Jadwal Kelas ({activeDay})
+                    </h3>
+                    <button
+                      onClick={() => setShowScheduleGuide(true)}
+                      className="text-[10px] font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 cursor-pointer bg-blue-50 dark:bg-blue-950/40 px-2 py-1 rounded-lg border border-blue-100/20"
+                    >
+                      <HelpCircle className="w-3.5 h-3.5 text-blue-500" /> Cara Mengubah
+                    </button>
                   </div>
-
-                  {/* Gamified class status */}
-                  <div className="sleek-card p-6 rounded-3xl shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between gap-4">
-                    <div>
-                      <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Level Rata-rata Kelas</h3>
-                      <div className="flex items-end gap-2.5 mt-3">
-                        <Trophy className="w-8 h-8 text-amber-500 animate-bounce-slow" />
-                        <div>
-                          <span className="text-2xl font-bold text-slate-800 dark:text-slate-100 bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">LVL 4</span>
-                          <span className="text-[10px] text-slate-400 block mt-0.5 font-medium">Akumulasi prestasi belajar</span>
+                  <div className="flex flex-col gap-2 max-h-[180px] overflow-y-auto pr-1">
+                    {todaysSchedules.map((sch) => (
+                      <div key={sch.id} className="p-3 bg-slate-50/60 dark:bg-slate-950/60 border border-slate-200/40 dark:border-slate-800/40 rounded-2xl flex justify-between items-center text-xs hover:scale-[1.01] transition-transform">
+                        <div className="min-w-0">
+                          <strong className="text-slate-800 dark:text-slate-200 block truncate">{sch.subject}</strong>
+                          <span className="text-slate-400 text-[10px] block mt-0.5 truncate">Pengampu: {sch.teacher}</span>
                         </div>
+                        <span className="text-[10px] font-mono font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 px-2 py-0.5 rounded-lg border border-blue-100/30 shrink-0 ml-2">{sch.time}</span>
                       </div>
-                    </div>
-
-                    <div className="text-xs">
-                      <div className="flex justify-between font-semibold text-slate-500 dark:text-slate-400 mb-1.5">
-                        <span>XP Kelas Ganjil</span>
-                        <span>4.500 / 6.000 XP</span>
+                    ))}
+                    {todaysSchedules.length === 0 && (
+                      <div className="py-8 text-center text-slate-400 text-xs font-medium">
+                        Tidak ada jadwal pelajaran hari ini.
                       </div>
-                      <div className="w-full bg-slate-100 dark:bg-slate-850 h-2.5 rounded-full overflow-hidden">
-                        <div className="bg-gradient-to-r from-blue-500 to-indigo-600 h-full w-[75%]" />
-                      </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -514,14 +547,18 @@ export default function App() {
               <div className="md:col-span-1 flex flex-col gap-6">
                 {/* Bulletins / Announcements */}
                 <div className="sleek-card p-6 rounded-3xl shadow-sm hover:shadow-md transition-all duration-300">
-                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Pengumuman Terkini</h3>
-                  <div className="flex flex-col gap-3">
-                    {[
-                      { title: "Koordinasi Lomba HUT RI-81", date: "15 Juli", author: "Wali Kelas" },
-                      { title: "Batas Akhir Kumpul Tugas Fisika", date: "22 Juli", author: "Ibu Hartati" },
-                      { title: "Sosialisasi Jurnal Refleksi Mandiri", date: "10 Juli", author: "Guru BK" },
-                    ].map((bull, idx) => (
-                      <div key={idx} className="p-3 bg-slate-50/60 dark:bg-slate-950/60 border border-slate-200/40 dark:border-slate-800/40 rounded-2xl text-xs hover:scale-[1.01] transition-transform">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Pengumuman Terkini</h3>
+                    <button
+                      onClick={() => setShowAnnouncementGuide(true)}
+                      className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 cursor-pointer bg-emerald-50 dark:bg-emerald-950/40 px-2 py-1 rounded-lg border border-emerald-100/20"
+                    >
+                      <HelpCircle className="w-3.5 h-3.5 text-emerald-500" /> Cara Mengubah
+                    </button>
+                  </div>
+                  <div className="flex flex-col gap-3 max-h-[220px] overflow-y-auto pr-1">
+                    {announcements.map((bull) => (
+                      <div key={bull.id} className="p-3 bg-slate-50/60 dark:bg-slate-950/60 border border-slate-200/40 dark:border-slate-800/40 rounded-2xl text-xs hover:scale-[1.01] transition-transform">
                         <strong className="text-slate-800 dark:text-slate-200 block">{bull.title}</strong>
                         <div className="flex justify-between text-[9px] text-slate-400 mt-1">
                           <span>Oleh: {bull.author}</span>
@@ -529,18 +566,28 @@ export default function App() {
                         </div>
                       </div>
                     ))}
+                    {announcements.length === 0 && (
+                      <div className="py-8 text-center text-slate-400 text-xs font-medium">
+                        Belum ada pengumuman kelas saat ini.
+                      </div>
+                    )}
                   </div>
                 </div>
 
                 {/* Upcoming events calendar strip */}
                 <div className="sleek-card p-6 rounded-3xl shadow-sm hover:shadow-md transition-all duration-300">
-                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Agenda Kelas Mendatang</h3>
-                  <div className="flex flex-col gap-3 text-xs">
-                    {[
-                      { name: "UTS Semester Ganjil", date: "15 Sept", daysLeft: "58 hari lagi" },
-                      { name: "Dekorasi Kelas Merdeka", date: "14 Agst", daysLeft: "26 hari lagi" },
-                    ].map((evt, idx) => (
-                      <div key={idx} className="flex justify-between items-center p-3 bg-slate-50/60 dark:bg-slate-950/60 border border-slate-200/40 dark:border-slate-850/40 rounded-2xl hover:scale-[1.01] transition-transform">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Agenda Kelas Mendatang</h3>
+                    <button
+                      onClick={() => setShowAgendaGuide(true)}
+                      className="text-[10px] font-bold text-amber-600 dark:text-amber-400 hover:underline flex items-center gap-1 cursor-pointer bg-amber-50 dark:bg-amber-950/40 px-2 py-1 rounded-lg border border-amber-100/20"
+                    >
+                      <HelpCircle className="w-3.5 h-3.5 text-amber-500" /> Cara Mengubah
+                    </button>
+                  </div>
+                  <div className="flex flex-col gap-3 text-xs max-h-[220px] overflow-y-auto pr-1">
+                    {agendas.map((evt) => (
+                      <div key={evt.id} className="flex justify-between items-center p-3 bg-slate-50/60 dark:bg-slate-950/60 border border-slate-200/40 dark:border-slate-850/40 rounded-2xl hover:scale-[1.01] transition-transform">
                         <div>
                           <strong className="text-slate-700 dark:text-slate-200 block">{evt.name}</strong>
                           <span className="text-[10px] text-slate-400 block mt-0.5">Tanggal: {evt.date}</span>
@@ -550,6 +597,11 @@ export default function App() {
                         </span>
                       </div>
                     ))}
+                    {agendas.length === 0 && (
+                      <div className="py-8 text-center text-slate-400 text-xs font-medium">
+                        Belum ada agenda kelas saat ini.
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -656,6 +708,39 @@ export default function App() {
         onNavigate={setActiveTab}
         features={featuresList}
       />
+
+      {/* Schedule Management & Guide Modal */}
+      {showScheduleGuide && (
+        <ScheduleGuideModal
+          schedules={schedules}
+          onUpdateSchedules={setSchedules}
+          onAddToast={addToast}
+          onClose={() => setShowScheduleGuide(false)}
+          currentRole={currentRole}
+        />
+      )}
+
+      {/* Announcement Management & Guide Modal */}
+      {showAnnouncementGuide && (
+        <AnnouncementGuideModal
+          announcements={announcements}
+          onUpdateAnnouncements={setAnnouncements}
+          onAddToast={addToast}
+          onClose={() => setShowAnnouncementGuide(false)}
+          currentRole={currentRole}
+        />
+      )}
+
+      {/* Agenda Management & Guide Modal */}
+      {showAgendaGuide && (
+        <AgendaGuideModal
+          agendas={agendas}
+          onUpdateAgendas={setAgendas}
+          onAddToast={addToast}
+          onClose={() => setShowAgendaGuide(false)}
+          currentRole={currentRole}
+        />
+      )}
 
       {/* Floating Micro interaction toasts overlay */}
       <Toast toasts={toasts} removeToast={removeToast} />

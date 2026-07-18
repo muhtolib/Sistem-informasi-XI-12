@@ -11,7 +11,9 @@ import {
   DiscussionThread,
   PollingItem,
   LibraryBook,
-  DocumentItem
+  DocumentItem,
+  AnnouncementItem,
+  AgendaItem
 } from "../types";
 
 // Helper for generating NIS/NISN
@@ -364,3 +366,15 @@ export const initialDocuments: DocumentItem[] = [
   { id: "doc-2", title: "Format Form Izin Sakit Siswa - SMAN 1 Nagreg.docx", category: "Format Surat", date: "2026-07-02", fileSize: "45 KB" },
   { id: "doc-3", title: "Tata Tertib Siswa SMA Terupdate 2026.pdf", category: "Arsip Kelas", date: "2026-06-20", fileSize: "2.4 MB" }
 ];
+
+export const initialAnnouncements: AnnouncementItem[] = [
+  { id: "ann-1", title: "Koordinasi Lomba HUT RI-81", date: "15 Juli", author: "Wali Kelas" },
+  { id: "ann-2", title: "Batas Akhir Kumpul Tugas Fisika", date: "22 Juli", author: "Ibu Hartati" },
+  { id: "ann-3", title: "Sosialisasi Jurnal Refleksi Mandiri", date: "10 Juli", author: "Guru BK" }
+];
+
+export const initialAgendas: AgendaItem[] = [
+  { id: "agd-1", name: "UTS Semester Ganjil", date: "15 Sept", daysLeft: "58 hari lagi" },
+  { id: "agd-2", name: "Dekorasi Kelas Merdeka", date: "14 Agst", daysLeft: "26 hari lagi" }
+];
+

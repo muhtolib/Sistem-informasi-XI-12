@@ -185,3 +185,18 @@ export interface DocumentItem {
   date: string;
   fileSize: string;
 }
+
+export interface AnnouncementItem {
+  id: string;
+  title: string;
+  date: string;
+  author: string;
+}
+
+export interface AgendaItem {
+  id: string;
+  name: string;
+  date: string;
+  daysLeft: string;
+}
+
