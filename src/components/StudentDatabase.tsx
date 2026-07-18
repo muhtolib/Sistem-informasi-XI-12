@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Student, Achievement, Violation } from "../types";
-import { Search, User, ShieldAlert, Award, FileText, Heart, MapPin, Phone, CreditCard, ChevronRight, Filter, AlertCircle, Sparkles, SlidersHorizontal } from "lucide-react";
+import { Search, User, ShieldAlert, Award, FileText, Heart, MapPin, Phone, CreditCard, ChevronRight, Filter, AlertCircle, Sparkles, SlidersHorizontal, FileSpreadsheet, Trash2 } from "lucide-react";
+import { BulkStudentImport } from "./BulkStudentImport";
 
 interface StudentDatabaseProps {
   students: Student[];
@@ -19,12 +20,27 @@ export const StudentDatabase: React.FC<StudentDatabaseProps> = ({
   const [genderFilter, setGenderFilter] = useState<"Semua" | "Laki-laki" | "Perempuan">("Semua");
   const [selectedStudentId, setSelectedStudentId] = useState<string>(students[0]?.id || "");
   const [activeTab, setActiveTab] = useState<"profile" | "counseling" | "card">("profile");
+  const [showImport, setShowImport] = useState(false);
+  const [studentToDelete, setStudentToDelete] = useState<Student | null>(null);
 
   // Counseling form edits
   const [editCounseling, setEditCounseling] = useState("");
   const [editMedical, setEditMedical] = useState("");
 
   const selectedStudent = students.find((s) => s.id === selectedStudentId);
+
+  const handleDeleteConfirm = () => {
+    if (!studentToDelete) return;
+    const updated = students.filter((s) => s.id !== studentToDelete.id);
+    onUpdateStudents(updated);
+    onAddToast(`Berhasil menghapus siswa ${studentToDelete.name} dari database`, "success");
+    setStudentToDelete(null);
+    if (updated.length > 0) {
+      setSelectedStudentId(updated[0].id);
+    } else {
+      setSelectedStudentId("");
+    }
+  };
 
   const filteredStudents = students.filter((s) => {
     const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase()) || s.nis.includes(search);
@@ -56,6 +72,19 @@ export const StudentDatabase: React.FC<StudentDatabaseProps> = ({
     }
   }, [selectedStudentId]);
 
+  if (showImport) {
+    return (
+      <div className="col-span-1 lg:col-span-3 animate-fade-in">
+        <BulkStudentImport
+          students={students}
+          onUpdateStudents={onUpdateStudents}
+          onAddToast={onAddToast}
+          onClose={() => setShowImport(false)}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Student List & Search Pane */}
@@ -70,6 +99,15 @@ export const StudentDatabase: React.FC<StudentDatabaseProps> = ({
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
+
+        {(currentRole === "Homeroom Teacher" || currentRole === "Administrator") && (
+          <button
+            onClick={() => setShowImport(true)}
+            className="w-full py-2.5 px-4 bg-gradient-to-r from-blue-600 to-indigo-650 hover:from-blue-700 hover:to-indigo-750 text-white font-bold text-xs rounded-2xl flex items-center justify-center gap-2 hover:scale-[1.01] hover:shadow-md transition-all duration-200"
+          >
+            <FileSpreadsheet className="w-4 h-4" /> Impor Massal Siswa
+          </button>
+        )}
 
         {/* Filters */}
         <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-slate-200/30 dark:border-slate-800/30">
@@ -144,7 +182,7 @@ export const StudentDatabase: React.FC<StudentDatabaseProps> = ({
                   alt={selectedStudent.name}
                   className="w-16 h-16 rounded-full object-cover border-2 border-white/40 shadow-md"
                 />
-                <div className="text-center sm:text-left">
+                <div className="text-center sm:text-left flex-1 min-w-0">
                   <h2 className="text-base font-bold flex items-center justify-center sm:justify-start gap-1.5">
                     {selectedStudent.name}
                     {selectedStudent.badges.includes("Class Captain") && (
@@ -167,6 +205,15 @@ export const StudentDatabase: React.FC<StudentDatabaseProps> = ({
                     ))}
                   </div>
                 </div>
+
+                {(currentRole === "Homeroom Teacher" || currentRole === "Administrator") && (
+                  <button
+                    onClick={() => setStudentToDelete(selectedStudent)}
+                    className="sm:self-start mt-3 sm:mt-0 py-1.5 px-3 bg-rose-500/10 hover:bg-rose-500/25 border border-rose-500/30 hover:border-rose-500/50 text-rose-200 text-[11px] font-bold rounded-xl transition-all flex items-center gap-1.5 shrink-0"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" /> Hapus Siswa
+                  </button>
+                )}
               </div>
 
               {/* Sub-tabs selection */}
@@ -393,6 +440,40 @@ export const StudentDatabase: React.FC<StudentDatabaseProps> = ({
           </div>
         )}
       </div>
+
+      {/* Confirmation Modal */}
+      {studentToDelete && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/50 dark:border-slate-800/50 shadow-2xl max-w-sm w-full p-6 animate-scale-up">
+            <div className="text-center">
+              <div className="w-12 h-12 bg-rose-50 dark:bg-rose-950 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-rose-100/30">
+                <Trash2 className="w-5 h-5" />
+              </div>
+              <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100">
+                Hapus Siswa dari Kelas?
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
+                Apakah Anda yakin ingin menghapus <strong>{studentToDelete.name}</strong> (NIS {studentToDelete.nis})? Tindakan ini tidak dapat dibatalkan.
+              </p>
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => setStudentToDelete(null)}
+                className="flex-1 py-2 px-4 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-850 text-slate-600 dark:text-slate-300 font-bold text-xs rounded-xl transition-all"
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleDeleteConfirm}
+                className="flex-1 py-2 px-4 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl transition-all shadow-md shadow-rose-500/10"
+              >
+                Ya, Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

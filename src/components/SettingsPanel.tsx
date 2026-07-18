@@ -15,10 +15,10 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
   currentRole,
 }) => {
   const [schoolName, setSchoolName] = useState("SMAN 1 Nagreg");
-  const [npsn, setNpsn] = useState("20219430");
+  const [npsn, setNpsn] = useState("20227900");
   const [classRoom, setClassRoom] = useState("XI-12");
   const [teacherName, setTeacherName] = useState("Pak Muhtolib");
-  const [nip, setNip] = useState("19780512 200501 2 003");
+  const [nip, setNip] = useState("19820111 202221 1 008");
 
   const handleSaveSettings = () => {
     if (currentRole !== "Homeroom Teacher" && currentRole !== "Administrator") {
