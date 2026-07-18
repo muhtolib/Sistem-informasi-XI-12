@@ -281,7 +281,7 @@ export default function App() {
               {!isSidebarCollapsed && (
                 <div>
                   <span className="text-sm font-bold tracking-tight block gradient-text">WaliKelas</span>
-                  <span className="text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase tracking-wider block">SMA N 1 Bandung</span>
+                  <span className="text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase tracking-wider block">SMA N 1 Nagreg</span>
                 </div>
               )}
             </div>
@@ -460,7 +460,7 @@ export default function App() {
                       <div className="text-center">
                         <CloudSun className="w-5 h-5 mx-auto text-amber-300 mb-1" />
                         <span className="text-xs font-bold block">24°C</span>
-                        <span className="text-[8px] uppercase tracking-wider block opacity-75">Bandung</span>
+                        <span className="text-[8px] uppercase tracking-wider block opacity-75">Nagreg</span>
                       </div>
                     </div>
                   </div>

@@ -83,7 +83,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ students
         <div className="sleek-card rounded-3xl p-5 shadow-sm flex flex-col gap-4">
           <div>
             <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Perbandingan Tren Kehadiran (%)</h3>
-            <p className="text-[11px] text-slate-400">Rasio kelas XI-12 dibandingkan dengan rata-rata SMAN 1 Bandung.</p>
+            <p className="text-[11px] text-slate-400">Rasio kelas XI-12 dibandingkan dengan rata-rata SMAN 1 Nagreg.</p>
           </div>
           <div className="h-[240px] w-full">
             <ResponsiveContainer width="100%" height="100%">

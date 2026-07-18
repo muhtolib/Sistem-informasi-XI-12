@@ -14,7 +14,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
   onImportBackup,
   currentRole,
 }) => {
-  const [schoolName, setSchoolName] = useState("SMAN 1 Bandung");
+  const [schoolName, setSchoolName] = useState("SMAN 1 Nagreg");
   const [npsn, setNpsn] = useState("20219430");
   const [classRoom, setClassRoom] = useState("XI-12");
   const [teacherName, setTeacherName] = useState("Pak Muhtolib");

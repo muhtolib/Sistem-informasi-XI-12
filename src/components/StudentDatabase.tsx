@@ -339,7 +339,7 @@ export const StudentDatabase: React.FC<StudentDatabaseProps> = ({
                     <div className="bg-gradient-to-r from-blue-600 to-indigo-700 h-20 p-4 text-white flex items-center justify-between">
                       <div>
                         <span className="text-[10px] font-bold uppercase tracking-wider block opacity-75">KARTU DIGITAL PELAJAR</span>
-                        <span className="text-xs font-semibold block">SMAN 1 BANDUNG</span>
+                        <span className="text-xs font-semibold block">SMAN 1 NAGREG</span>
                       </div>
                       <span className="text-[9px] border border-white/40 px-2 py-0.5 rounded-full bg-white/10">XI-12</span>
                     </div>

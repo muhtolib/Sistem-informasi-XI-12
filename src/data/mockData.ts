@@ -361,6 +361,6 @@ export const initialLibraryBooks: LibraryBook[] = [
 
 export const initialDocuments: DocumentItem[] = [
   { id: "doc-1", title: "Surat Edaran Persiapan HUT RI 81 Kelas XI-12.pdf", category: "Surat Edaran", date: "2026-07-15", fileSize: "1.2 MB" },
-  { id: "doc-2", title: "Format Form Izin Sakit Siswa - SMAN 1 Bandung.docx", category: "Format Surat", date: "2026-07-02", fileSize: "45 KB" },
+  { id: "doc-2", title: "Format Form Izin Sakit Siswa - SMAN 1 Nagreg.docx", category: "Format Surat", date: "2026-07-02", fileSize: "45 KB" },
   { id: "doc-3", title: "Tata Tertib Siswa SMA Terupdate 2026.pdf", category: "Arsip Kelas", date: "2026-06-20", fileSize: "2.4 MB" }
 ];
