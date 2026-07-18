@@ -1,0 +1,6 @@
+{
+  "name": "Sistem Manajemen Kelas Digital SMA",
+  "description": "Sistem manajemen kelas digital modern untuk Wali Kelas SMA di Indonesia, mengintegrasikan absensi, administrasi, akademik, komunikasi, portfolio, gamifikasi, dan asisten AI.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
