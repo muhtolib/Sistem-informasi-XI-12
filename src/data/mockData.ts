@@ -281,7 +281,7 @@ export const classRules = [
 ];
 
 export const initialCashTransactions: CashTransaction[] = [
-  { id: "tx-1", date: "2026-07-01", description: "Saldo Awal Kas Kelas XII MIPA 1", amount: 250000, type: "Debit", category: "Lainnya" },
+  { id: "tx-1", date: "2026-07-01", description: "Saldo Awal Kas Kelas XI-12", amount: 250000, type: "Debit", category: "Lainnya" },
   { id: "tx-2", date: "2026-07-05", studentId: "std-1", studentName: "Aditya Pratama Putra", description: "Iuran Bulanan Juli (Aditya)", amount: 20000, type: "Debit", category: "Iuran Harian" },
   { id: "tx-3", date: "2026-07-05", studentId: "std-2", studentName: "Citra Lestari Wulandari", description: "Iuran Bulanan Juli (Citra)", amount: 20000, type: "Debit", category: "Iuran Harian" },
   { id: "tx-4", date: "2026-07-05", studentId: "std-4", studentName: "Dian Sastrowardoyo", description: "Iuran Bulanan Juli (Dian)", amount: 20000, type: "Debit", category: "Iuran Harian" },
@@ -294,8 +294,8 @@ export const initialMeetingNotes: MeetingNote[] = [
   {
     id: "note-1",
     date: "2026-07-10",
-    title: "Rapat Koordinasi Wali Kelas dengan Pengurus Kelas XII MIPA 1",
-    attendees: ["Ibu Hartati (Wali Kelas)", "Aditya Pratama (Ketua Kelas)", "Citra Lestari (Sekretaris)", "Dian Sastro (Bendahara)"],
+    title: "Rapat Koordinasi Wali Kelas dengan Pengurus Kelas XI-12",
+    attendees: ["Pak Muhtolib (Wali Kelas)", "Aditya Pratama (Ketua Kelas)", "Citra Lestari (Sekretaris)", "Dian Sastro (Bendahara)"],
     content: "Membahas tentang persiapan dekorasi kelas menyambut HUT RI ke-81, perbaikan gorden kelas yang robek, serta rencana kas mingguan untuk dana cadangan sosial siswa.",
     actionItems: [
       "Beli bendera plastik kecil dan kertas krep merah putih (PJ: Aditya, deadline 25 Juli).",
@@ -306,9 +306,9 @@ export const initialMeetingNotes: MeetingNote[] = [
 ];
 
 export const initialLessonMaterials: LessonMaterial[] = [
-  { id: "mat-1", title: "Modul Lengkap Termodinamika & Hukum Gas Ideal", subject: "Fisika", classLevel: "XII MIPA", type: "PDF", url: "#", description: "Modul pengantar konsep termodinamika kelas XII mencakup diagram P-V, siklus Carnot, dan efisiensi mesin." },
-  { id: "mat-2", title: "Video Pembelajaran: Turunan Fungsi Trigonometri", subject: "Matematika", classLevel: "XII MIPA", type: "Video", url: "https://www.youtube.com/embed/dQw4w9WgXcQ", duration: "12 Menit", description: "Video beranimasi menarik menjelaskan penurunan rumus turunan sin, cos, tan secara komprehensif." },
-  { id: "mat-3", title: "Slide Presentasi Sifat Koligatif Larutan", subject: "Kimia", classLevel: "XII MIPA", type: "Slide", url: "#", description: "Slide presentasi ringkas mengenai penurunan tekanan uap, kenaikan titik didih, penurunan titik beku, dan tekanan osmosis." }
+  { id: "mat-1", title: "Modul Lengkap Termodinamika & Hukum Gas Ideal", subject: "Fisika", classLevel: "XI-12", type: "PDF", url: "#", description: "Modul pengantar konsep termodinamika kelas XI mencakup diagram P-V, siklus Carnot, dan efisiensi mesin." },
+  { id: "mat-2", title: "Video Pembelajaran: Turunan Fungsi Trigonometri", subject: "Matematika", classLevel: "XI-12", type: "Video", url: "https://www.youtube.com/embed/dQw4w9WgXcQ", duration: "12 Menit", description: "Video beranimasi menarik menjelaskan penurunan rumus turunan sin, cos, tan secara komprehensif." },
+  { id: "mat-3", title: "Slide Presentasi Sifat Koligatif Larutan", subject: "Kimia", classLevel: "XI-12", type: "Slide", url: "#", description: "Slide presentasi ringkas mengenai penurunan tekanan uap, kenaikan titik didih, penurunan titik beku, dan tekanan osmosis." }
 ];
 
 export const initialHomeworkAssignments: HomeworkAssignment[] = [
@@ -333,7 +333,7 @@ export const initialDiscussionThreads: DiscussionThread[] = [
     content: "Halo teman-teman dan Ibu Guru. Saya sedang membaca tentang siklus Carnot. Dikatakan bahwa efisiensi Carnot adalah batas maksimum, tapi kenapa tetap tidak bisa mencapai 100% efisiensi secara teoritis? Bukankah itu mesin ideal?",
     date: "2026-07-16 19:30",
     replies: [
-      { id: "rep-1", author: "Ibu Hartati, M.Pd", role: "Wali Kelas", content: "Pertanyaan hebat, Aditya! Berdasarkan Hukum Kedua Termodinamika, kalor tidak dapat diubah seluruhnya menjadi usaha tanpa adanya kalor sisa yang dibuang ke reservoir dingin (Qc > 0). Jadi, untuk efisiensi 100%, suhu reservoir dingin haruslah 0 Kelvin (Nol Mutlak), yang mana secara praktis tidak mungkin dicapai berdasarkan Hukum Ketiga.", date: "2026-07-16 20:15" },
+      { id: "rep-1", author: "Pak Muhtolib, M.Pd", role: "Wali Kelas", content: "Pertanyaan hebat, Aditya! Berdasarkan Hukum Kedua Termodinamika, kalor tidak dapat diubah seluruhnya menjadi usaha tanpa adanya kalor sisa yang dibuang ke reservoir dingin (Qc > 0). Jadi, untuk efisiensi 100%, suhu reservoir dingin haruslah 0 Kelvin (Nol Mutlak), yang mana secara praktis tidak mungkin dicapai berdasarkan Hukum Ketiga.", date: "2026-07-16 20:15" },
       { id: "rep-2", author: "Dian Sastrowardoyo", role: "Siswa", content: "Wah penjelasan Ibu jelas sekali! Jadi karena kita tidak bisa mencapai suhu 0 Kelvin, maka Qc selalu bernilai positif dan efisiensi selalu kurang dari 1.", date: "2026-07-17 08:00" }
     ]
   }
@@ -360,7 +360,7 @@ export const initialLibraryBooks: LibraryBook[] = [
 ];
 
 export const initialDocuments: DocumentItem[] = [
-  { id: "doc-1", title: "Surat Edaran Persiapan HUT RI 81 Kelas XII.pdf", category: "Surat Edaran", date: "2026-07-15", fileSize: "1.2 MB" },
+  { id: "doc-1", title: "Surat Edaran Persiapan HUT RI 81 Kelas XI-12.pdf", category: "Surat Edaran", date: "2026-07-15", fileSize: "1.2 MB" },
   { id: "doc-2", title: "Format Form Izin Sakit Siswa - SMAN 1 Bandung.docx", category: "Format Surat", date: "2026-07-02", fileSize: "45 KB" },
   { id: "doc-3", title: "Tata Tertib Siswa SMA Terupdate 2026.pdf", category: "Arsip Kelas", date: "2026-06-20", fileSize: "2.4 MB" }
 ];

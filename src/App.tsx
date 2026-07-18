@@ -442,8 +442,8 @@ export default function App() {
 
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 relative z-10">
                     <div className="flex flex-col">
-                      <span className="text-xs font-bold uppercase tracking-widest opacity-80">Wali Kelas XII MIPA 1</span>
-                      <h2 className="text-xl font-bold mt-1">Selamat Datang Kembali, Ibu Hartati!</h2>
+                      <span className="text-xs font-bold uppercase tracking-widest opacity-80">Wali Kelas XI-12</span>
+                      <h2 className="text-xl font-bold mt-1">Selamat Datang Kembali, Pak Muhtolib!</h2>
                       <p className="text-xs text-blue-100 mt-1">Sistem manajemen siap mengawasi 8 siswa terdaftar hari ini.</p>
                     </div>
 

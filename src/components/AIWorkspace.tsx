@@ -10,7 +10,7 @@ interface AIWorkspaceProps {
 export const AIWorkspace: React.FC<AIWorkspaceProps> = ({
   onAddToast,
   onAwardXP,
-  studentName = "Siswa Kelas XII",
+  studentName = "Siswa Kelas XI-12",
 }) => {
   const [activeSubTab, setActiveSubTab] = useState<"assistant" | "planner" | "quiz" | "summary" | "reflection" | "chatbot">("chatbot");
   const [inputText, setInputText] = useState("");
@@ -22,8 +22,8 @@ export const AIWorkspace: React.FC<AIWorkspaceProps> = ({
   // Pre-configured suggestions to trigger realistic SMA questions
   const suggestions = {
     assistant: "Bantu jelaskan bagaimana cara kerja Hukum Hooke pada pegas serta rumus elastisitasnya secara lengkap.",
-    planner: "Buat jadwal persiapan ujian kelulusan mata pelajaran Biologi selama 1 minggu penuh untuk siswa XII MIPA.",
-    quiz: "Buat kuis pilihan ganda berisi 3 soal materi Termodinamika (Siklus Carnot) SMA Kelas 12 beserta pembahasannya.",
+    planner: "Buat jadwal persiapan ujian kelulusan mata pelajaran Biologi selama 1 minggu penuh untuk siswa XI-12.",
+    quiz: "Buat kuis pilihan ganda berisi 3 soal materi Termodinamika (Siklus Carnot) SMA Kelas XI-12 beserta pembahasannya.",
     summary: "Rangkum materi Sosiologi tentang Konflik Sosial dan bentuk-bentuk integrasi masyarakat.",
     reflection: "Ini refleksi belajar saya hari ini: 'Saya masih bingung membedakan antara gaya gesek kinetik dan statis saat mengerjakan soal beban miring.' Tolong evaluasi.",
     chatbot: "Apa perbedaan antara pembelahan sel Mitosis dan Meiosis? Jelaskan perbedaannya dalam bentuk tabel.",

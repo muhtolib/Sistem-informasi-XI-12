@@ -341,7 +341,7 @@ export const StudentDatabase: React.FC<StudentDatabaseProps> = ({
                         <span className="text-[10px] font-bold uppercase tracking-wider block opacity-75">KARTU DIGITAL PELAJAR</span>
                         <span className="text-xs font-semibold block">SMAN 1 BANDUNG</span>
                       </div>
-                      <span className="text-[9px] border border-white/40 px-2 py-0.5 rounded-full bg-white/10">MIPA 1</span>
+                      <span className="text-[9px] border border-white/40 px-2 py-0.5 rounded-full bg-white/10">XI-12</span>
                     </div>
 
                     {/* Card Content details */}
@@ -380,7 +380,7 @@ export const StudentDatabase: React.FC<StudentDatabaseProps> = ({
 
                     {/* Card Footer strip */}
                     <div className="bg-slate-50 dark:bg-slate-900 px-4 py-2 text-center text-[9px] text-slate-400 border-t border-slate-100 dark:border-slate-800 font-mono">
-                      Wali Kelas: Ibu Hartati, M.Pd
+                      Wali Kelas: Pak Muhtolib
                     </div>
                   </div>
                 </div>

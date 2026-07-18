@@ -242,7 +242,7 @@ export const ClassroomAdmin: React.FC<ClassroomAdminProps> = ({
 
             {/* Rules list */}
             <div className="sleek-card rounded-3xl p-5 shadow-sm">
-              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Kesepakatan Tata Tertib Kelas XII</h3>
+              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Kesepakatan Tata Tertib Kelas XI-12</h3>
               <div className="flex flex-col gap-3">
                 {classRules.map((rule) => (
                   <div key={rule.id} className="p-3.5 rounded-xl border border-slate-100 dark:border-slate-800 text-xs">
@@ -266,7 +266,7 @@ export const ClassroomAdmin: React.FC<ClassroomAdminProps> = ({
                 <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 blur-lg rounded-full" />
                 <span className="text-[10px] uppercase font-bold opacity-75">Saldo Kas Saat Ini</span>
                 <h3 className="text-2xl font-bold mt-1">Rp {balance.toLocaleString("id-ID")}</h3>
-                <span className="text-[9px] block opacity-75 mt-2">Dikelola oleh Bendahara Kelas XII MIPA 1</span>
+                <span className="text-[9px] block opacity-75 mt-2">Dikelola oleh Bendahara Kelas XI-12</span>
               </div>
 
               {/* Cash Ledger Input Form */}

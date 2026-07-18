@@ -47,7 +47,7 @@ export const CommunicationHub: React.FC<CommunicationHubProps> = ({
             ...disc.replies,
             {
               id: `rep-${Date.now()}`,
-              author: currentRole === "Homeroom Teacher" ? "Ibu Hartati, M.Pd" : "Siswa XII MIPA 1",
+              author: currentRole === "Homeroom Teacher" ? "Pak Muhtolib, M.Pd" : "Siswa XI-12",
               role: currentRole,
               content: text,
               date: new Date().toLocaleDateString("id-ID") + " " + new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }),
@@ -96,7 +96,7 @@ export const CommunicationHub: React.FC<CommunicationHubProps> = ({
     const newThread: DiscussionThread = {
       id: `disc-${Date.now()}`,
       title: newThreadTitle,
-      author: currentRole === "Homeroom Teacher" ? "Ibu Hartati, M.Pd" : "Siswa XII MIPA 1",
+      author: currentRole === "Homeroom Teacher" ? "Pak Muhtolib, M.Pd" : "Siswa XI-12",
       authorRole: currentRole === "Homeroom Teacher" ? "Wali Kelas" : "Siswa",
       content: newThreadContent,
       date: new Date().toLocaleDateString("id-ID") + " " + new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }),
@@ -331,7 +331,7 @@ export const CommunicationHub: React.FC<CommunicationHubProps> = ({
                 <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100 flex items-center gap-1.5">
                   <Mailbox className="w-4 h-4 text-blue-500" /> Jendela Aspirasi Siswa
                 </h3>
-                <p className="text-slate-400 mt-0.5">Sampaikan keluhan, aduan, atau ide gila untuk perbaikan kelas XII MIPA 1.</p>
+                <p className="text-slate-400 mt-0.5">Sampaikan keluhan, aduan, atau ide gila untuk perbaikan kelas XI-12.</p>
               </div>
 
               <div className="grid grid-cols-2 gap-2">

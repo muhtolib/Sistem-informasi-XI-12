@@ -400,7 +400,7 @@ export const AttendanceManager: React.FC<AttendanceManagerProps> = ({
         <div className="sleek-card rounded-3xl p-6 flex flex-col gap-6 animate-fade-in shadow-sm">
           <div>
             <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100">Tren Tingkat Presensi Bulanan</h3>
-            <p className="text-xs text-slate-400">Analisis rasio kehadiran siswa XII MIPA 1 semester ganjil.</p>
+            <p className="text-xs text-slate-400">Analisis rasio kehadiran siswa XI-12 semester ganjil.</p>
           </div>
 
           <div className="h-[260px] w-full">

@@ -16,8 +16,8 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
 }) => {
   const [schoolName, setSchoolName] = useState("SMAN 1 Bandung");
   const [npsn, setNpsn] = useState("20219430");
-  const [classRoom, setClassRoom] = useState("XII MIPA 1");
-  const [teacherName, setTeacherName] = useState("Ibu Hartati, M.Pd");
+  const [classRoom, setClassRoom] = useState("XI-12");
+  const [teacherName, setTeacherName] = useState("Pak Muhtolib");
   const [nip, setNip] = useState("19780512 200501 2 003");
 
   const handleSaveSettings = () => {
