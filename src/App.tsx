@@ -406,7 +406,7 @@ export default function App() {
       };
 
       socket.onerror = (err) => {
-        console.error("WebSocket connection issue:", err);
+        console.warn("WebSocket sync connection status:", err);
         if (socket) {
           socket.close();
         }

@@ -241,13 +241,11 @@ async function startServer() {
   const wss = new WebSocketServer({ noServer: true });
 
   server.on("upgrade", (request, socket, head) => {
-    const url = new URL(request.url || "", `http://${request.headers.host || "localhost"}`);
-    if (url.pathname === "/api/ws-sync") {
+    const pathname = request.url ? request.url.split("?")[0] : "";
+    if (pathname === "/api/ws-sync" || pathname === "/api/ws-sync/") {
       wss.handleUpgrade(request, socket, head, (ws) => {
         wss.emit("connection", ws, request);
       });
-    } else {
-      // Allow other websocket handlers (like Vite dev server) to upgrade their connections
     }
   });
 
