@@ -3,6 +3,15 @@ import path from "path";
 import dotenv from "dotenv";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
+import { WebSocketServer, WebSocket } from "ws";
+import {
+  initialStudents,
+  initialSchedules,
+  initialCashTransactions,
+  initialMeetingNotes,
+  initialAnnouncements,
+  initialAgendas
+} from "./src/data/mockData";
 
 dotenv.config();
 
@@ -185,6 +194,30 @@ Silakan pilih fitur asisten AI di panel samping atau ajukan pertanyaan spesifik 
 
 // Start building full-stack Server configuration
 async function startServer() {
+  // Centralized real-time state source of truth
+  const state = {
+    students: initialStudents,
+    attendance: [] as any[],
+    permissions: [
+      {
+        id: "p-form-1",
+        studentId: "std-3",
+        studentName: "Bagus Setiawan",
+        parentName: "Agus Setiawan",
+        dateStart: new Date().toISOString().split("T")[0],
+        dateEnd: new Date().toISOString().split("T")[0],
+        type: "Izin",
+        reason: "Menghadiri upacara pernikahan kakak kandung di luar kota",
+        status: "Diproses"
+      }
+    ] as any[],
+    cash: initialCashTransactions,
+    meetingNotes: initialMeetingNotes,
+    schedules: initialSchedules,
+    announcements: initialAnnouncements,
+    agendas: initialAgendas
+  };
+
   // Vite integration
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
@@ -200,8 +233,52 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, "0.0.0.0", () => {
+  const server = app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server running on http://localhost:${PORT}`);
+  });
+
+  // Setup WebSocket Server for online real-time sync
+  const wss = new WebSocketServer({ server });
+
+  wss.on("connection", (ws) => {
+    console.log("Client connected to real-time sync server");
+
+    // Send the current centralized state immediately on connection
+    ws.send(JSON.stringify({
+      type: "init",
+      payload: state
+    }));
+
+    ws.on("message", (message) => {
+      try {
+        const data = JSON.parse(message.toString());
+        if (data.type === "update_state") {
+          const { key, payload } = data;
+          if (key && Array.isArray(payload) && key in state) {
+            // Update the server's in-memory source of truth
+            (state as any)[key] = payload;
+            console.log(`State updated for key: ${key}, broadcasting to other clients...`);
+
+            // Broadcast the update to all OTHER connected clients
+            wss.clients.forEach((client) => {
+              if (client !== ws && client.readyState === WebSocket.OPEN) {
+                client.send(JSON.stringify({
+                  type: "update_state",
+                  key,
+                  payload
+                }));
+              }
+            });
+          }
+        }
+      } catch (err) {
+        console.error("Error processing WebSocket message:", err);
+      }
+    });
+
+    ws.on("close", () => {
+      console.log("Client disconnected from real-time sync server");
+    });
   });
 }
 

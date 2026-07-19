@@ -73,6 +73,19 @@ import { AnnouncementGuideModal } from "./components/AnnouncementGuideModal";
 import { AgendaGuideModal } from "./components/AgendaGuideModal";
 
 export default function App() {
+  // --- Online / Real-time Sync States and Refs ---
+  const [isOnline, setIsOnline] = useState(false);
+  const socketRef = useRef<WebSocket | null>(null);
+
+  const lastStudentsRef = useRef<string>("");
+  const lastAttendanceRef = useRef<string>("");
+  const lastPermissionsRef = useRef<string>("");
+  const lastCashRef = useRef<string>("");
+  const lastMeetingNotesRef = useRef<string>("");
+  const lastSchedulesRef = useRef<string>("");
+  const lastAnnouncementsRef = useRef<string>("");
+  const lastAgendasRef = useRef<string>("");
+
   // --- Persistent Storage State ---
   const [students, setStudents] = useState<Student[]>(() => {
     const saved = localStorage.getItem("sma_students");
@@ -132,37 +145,125 @@ export default function App() {
   const [showAnnouncementGuide, setShowAnnouncementGuide] = useState(false);
   const [showAgendaGuide, setShowAgendaGuide] = useState(false);
 
-  // Save states to localstorage for Offline local PWA capability
+  // Save states to localstorage and synchronize to online WebSocket server
   useEffect(() => {
     localStorage.setItem("sma_students", JSON.stringify(students));
+    const str = JSON.stringify(students);
+    if (str !== lastStudentsRef.current) {
+      lastStudentsRef.current = str;
+      if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+        socketRef.current.send(JSON.stringify({
+          type: "update_state",
+          key: "students",
+          payload: students
+        }));
+      }
+    }
   }, [students]);
 
   useEffect(() => {
     localStorage.setItem("sma_attendance", JSON.stringify(attendanceRecords));
+    const str = JSON.stringify(attendanceRecords);
+    if (str !== lastAttendanceRef.current) {
+      lastAttendanceRef.current = str;
+      if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+        socketRef.current.send(JSON.stringify({
+          type: "update_state",
+          key: "attendance",
+          payload: attendanceRecords
+        }));
+      }
+    }
   }, [attendanceRecords]);
 
   useEffect(() => {
     localStorage.setItem("sma_permissions", JSON.stringify(permissionForms));
+    const str = JSON.stringify(permissionForms);
+    if (str !== lastPermissionsRef.current) {
+      lastPermissionsRef.current = str;
+      if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+        socketRef.current.send(JSON.stringify({
+          type: "update_state",
+          key: "permissions",
+          payload: permissionForms
+        }));
+      }
+    }
   }, [permissionForms]);
 
   useEffect(() => {
     localStorage.setItem("sma_cash", JSON.stringify(cashTransactions));
+    const str = JSON.stringify(cashTransactions);
+    if (str !== lastCashRef.current) {
+      lastCashRef.current = str;
+      if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+        socketRef.current.send(JSON.stringify({
+          type: "update_state",
+          key: "cash",
+          payload: cashTransactions
+        }));
+      }
+    }
   }, [cashTransactions]);
 
   useEffect(() => {
     localStorage.setItem("sma_meeting_notes", JSON.stringify(meetingNotes));
+    const str = JSON.stringify(meetingNotes);
+    if (str !== lastMeetingNotesRef.current) {
+      lastMeetingNotesRef.current = str;
+      if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+        socketRef.current.send(JSON.stringify({
+          type: "update_state",
+          key: "meetingNotes",
+          payload: meetingNotes
+        }));
+      }
+    }
   }, [meetingNotes]);
 
   useEffect(() => {
     localStorage.setItem("sma_schedules", JSON.stringify(schedules));
+    const str = JSON.stringify(schedules);
+    if (str !== lastSchedulesRef.current) {
+      lastSchedulesRef.current = str;
+      if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+        socketRef.current.send(JSON.stringify({
+          type: "update_state",
+          key: "schedules",
+          payload: schedules
+        }));
+      }
+    }
   }, [schedules]);
 
   useEffect(() => {
     localStorage.setItem("sma_announcements", JSON.stringify(announcements));
+    const str = JSON.stringify(announcements);
+    if (str !== lastAnnouncementsRef.current) {
+      lastAnnouncementsRef.current = str;
+      if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+        socketRef.current.send(JSON.stringify({
+          type: "update_state",
+          key: "announcements",
+          payload: announcements
+        }));
+      }
+    }
   }, [announcements]);
 
   useEffect(() => {
     localStorage.setItem("sma_agendas", JSON.stringify(agendas));
+    const str = JSON.stringify(agendas);
+    if (str !== lastAgendasRef.current) {
+      lastAgendasRef.current = str;
+      if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+        socketRef.current.send(JSON.stringify({
+          type: "update_state",
+          key: "agendas",
+          payload: agendas
+        }));
+      }
+    }
   }, [agendas]);
 
   // --- UI/UX & Navigation States ---
@@ -189,6 +290,128 @@ export default function App() {
   const removeToast = (id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
+
+  // --- Real-time WebSocket Synchronization Connection ---
+  useEffect(() => {
+    const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+    const wsUrl = `${wsProtocol}//${window.location.host}`;
+    let socket: WebSocket;
+
+    function connect() {
+      console.log("Connecting to real-time sync server at:", wsUrl);
+      socket = new WebSocket(wsUrl);
+      socketRef.current = socket;
+
+      socket.onopen = () => {
+        console.log("Connected to real-time sync server!");
+        setIsOnline(true);
+        addToast("Koneksi real-time terhubung!", "success");
+      };
+
+      socket.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          if (data.type === "init") {
+            const payload = data.payload;
+            console.log("Received initial synchronized state from server:", payload);
+
+            if (payload.students) {
+              const str = JSON.stringify(payload.students);
+              lastStudentsRef.current = str;
+              setStudents(payload.students);
+            }
+            if (payload.attendance) {
+              const str = JSON.stringify(payload.attendance);
+              lastAttendanceRef.current = str;
+              setAttendanceRecords(payload.attendance);
+            }
+            if (payload.permissions) {
+              const str = JSON.stringify(payload.permissions);
+              lastPermissionsRef.current = str;
+              setPermissionForms(payload.permissions);
+            }
+            if (payload.cash) {
+              const str = JSON.stringify(payload.cash);
+              lastCashRef.current = str;
+              setCashTransactions(payload.cash);
+            }
+            if (payload.meetingNotes) {
+              const str = JSON.stringify(payload.meetingNotes);
+              lastMeetingNotesRef.current = str;
+              setMeetingNotes(payload.meetingNotes);
+            }
+            if (payload.schedules) {
+              const str = JSON.stringify(payload.schedules);
+              lastSchedulesRef.current = str;
+              setSchedules(payload.schedules);
+            }
+            if (payload.announcements) {
+              const str = JSON.stringify(payload.announcements);
+              lastAnnouncementsRef.current = str;
+              setAnnouncements(payload.announcements);
+            }
+            if (payload.agendas) {
+              const str = JSON.stringify(payload.agendas);
+              lastAgendasRef.current = str;
+              setAgendas(payload.agendas);
+            }
+          } else if (data.type === "update_state") {
+            const { key, payload } = data;
+            const str = JSON.stringify(payload);
+            console.log(`Received state update from other client for key: ${key}`);
+
+            if (key === "students") {
+              lastStudentsRef.current = str;
+              setStudents(payload);
+            } else if (key === "attendance") {
+              lastAttendanceRef.current = str;
+              setAttendanceRecords(payload);
+            } else if (key === "permissions") {
+              lastPermissionsRef.current = str;
+              setPermissionForms(payload);
+            } else if (key === "cash") {
+              lastCashRef.current = str;
+              setCashTransactions(payload);
+            } else if (key === "meetingNotes") {
+              lastMeetingNotesRef.current = str;
+              setMeetingNotes(payload);
+            } else if (key === "schedules") {
+              lastSchedulesRef.current = str;
+              setSchedules(payload);
+            } else if (key === "announcements") {
+              lastAnnouncementsRef.current = str;
+              setAnnouncements(payload);
+            } else if (key === "agendas") {
+              lastAgendasRef.current = str;
+              setAgendas(payload);
+            }
+          }
+        } catch (err) {
+          console.error("Error processing incoming WebSocket message:", err);
+        }
+      };
+
+      socket.onclose = () => {
+        console.log("Real-time sync server disconnected.");
+        setIsOnline(false);
+        // Attempt reconnection after 3 seconds
+        setTimeout(connect, 3000);
+      };
+
+      socket.onerror = (err) => {
+        console.error("WebSocket error:", err);
+        socket.close();
+      };
+    }
+
+    connect();
+
+    return () => {
+      if (socket) {
+        socket.close();
+      }
+    };
+  }, []);
 
   // --- Command Palette State ---
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
@@ -379,13 +602,17 @@ export default function App() {
           </nav>
         </div>
 
-        {/* Offline status indicator */}
+        {/* Online/Offline status indicator */}
         {!isSidebarCollapsed && (
           <div className="m-4 p-3 bg-slate-50/60 dark:bg-slate-950/60 border border-slate-200/40 dark:border-slate-800/40 rounded-2xl flex items-center gap-2.5">
-            <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+            <div className={`w-2.5 h-2.5 rounded-full ${isOnline ? "bg-emerald-500 shadow-md shadow-emerald-500/50" : "bg-amber-500"} animate-pulse`} />
             <div className="text-[10px]">
-              <span className="font-semibold text-slate-500 dark:text-slate-400 block">System Offline Ready</span>
-              <span className="text-slate-400 dark:text-slate-500 block mt-0.5">Semua data disimpan lokal</span>
+              <span className="font-bold text-slate-600 dark:text-slate-300 block">
+                {isOnline ? "Koneksi Real-time Aktif" : "Menghubungkan..."}
+              </span>
+              <span className="text-slate-400 dark:text-slate-500 block mt-0.5">
+                {isOnline ? "Sinkronisasi server online" : "Mode lokal & cadangan aktif"}
+              </span>
             </div>
           </div>
         )}
@@ -401,8 +628,19 @@ export default function App() {
             <button className="p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/40 dark:border-slate-800/40 md:hidden hover:bg-slate-50">
               <Menu className="w-4 h-4" />
             </button>
-            <h1 className="text-sm font-bold tracking-tight text-slate-800 dark:text-slate-100 capitalize">
+            <h1 className="text-sm font-bold tracking-tight text-slate-800 dark:text-slate-100 capitalize flex items-center gap-2">
               {activeTab === "dashboard" ? "Jendela Wali Kelas" : activeTab.replace("-", " ")}
+              {isOnline ? (
+                <span className="inline-flex items-center gap-1 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-100/20 shadow-sm shadow-emerald-500/10">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  Online
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-amber-100/20">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                  Connecting
+                </span>
+              )}
             </h1>
           </div>
 
