@@ -30,8 +30,67 @@ export const AIWorkspace: React.FC<AIWorkspaceProps> = ({
   };
 
   const getFrontendMockResponse = (prompt: string, tab: string): string => {
-    const lower = prompt.toLowerCase();
+    const lower = prompt.toLowerCase().trim();
     
+    // 1. Math / Calculation queries
+    if (
+      lower.includes("hitung") || 
+      (lower.includes("berapa") && /\d+/.test(lower)) || 
+      lower.includes("matematika") || 
+      lower.includes("aljabar") ||
+      lower.includes("integral") ||
+      lower.includes("persamaan") ||
+      lower.includes("+") || 
+      lower.includes("-") || 
+      (lower.includes("x") && /\d+/.test(lower)) || 
+      (lower.includes("/") && /\d+/.test(lower))
+    ) {
+      const numbers = lower.match(/\d+/g) || [];
+      const num1 = numbers[0] ? parseInt(numbers[0], 10) : 12;
+      const num2 = numbers[1] ? parseInt(numbers[1], 10) : 5;
+      
+      let op = "Penjumlahan";
+      let symbol = "+";
+      let result = num1 + num2;
+      
+      if (lower.includes("kali") || lower.includes("x") || lower.includes("*")) {
+        op = "Perkalian";
+        symbol = "×";
+        result = num1 * num2;
+      } else if (lower.includes("kurang") || lower.includes("-")) {
+        op = "Pengurangan";
+        symbol = "-";
+        result = num1 - num2;
+      } else if (lower.includes("bagi") || lower.includes("/")) {
+        op = "Pembagian";
+        symbol = "/";
+        result = num2 !== 0 ? Math.round((num1 / num2) * 100) / 100 : 0;
+      }
+      
+      return `### 🧮 Solusi Pembahasan Matematika / Berhitung Mandiri
+      
+**Materi: Operasi ${op} Aljabar SMA**
+*Disusun secara dinamis oleh Asisten Akademis AI SMAN 1 Nagreg*
+
+#### Langkah-Langkah Penyelesaian Soal Anda:
+1.  **Identifikasi Nilai Parameter:**
+    *   Suku pertama ($a$) = $${num1}$$
+    *   Suku kedua ($b$) = $${num2}$$
+2.  **Formulasi Persamaan:**
+    $$S(x) = a ${symbol} b$$
+    $$S(x) = ${num1} ${symbol} ${num2}$$
+3.  **Hasil Perhitungan Akhir:**
+    $$\\mathbf{Hasil = ${result}}$$
+
+#### 💡 Teori Tambahan Pendalaman Karakter:
+*   **Sifat Komutatif:** Operasi penjumlahan dan perkalian memenuhi hukum komutatif, yaitu $a ${symbol} b = b ${symbol} a$. Namun tidak berlaku untuk pengurangan dan pembagian.
+*   **Sifat Asosiatif:** Pengelompokan hitungan $(a ${symbol} b) ${symbol} c = a ${symbol} (b ${symbol} c)$ memudahkan pencarian nilai suku polinomial majemuk.
+*   **Aplikasi Realistis:** Konsep ini sering digunakan untuk menghitung matriks transformasi linier atau menghitung kelajuan rata-rata gerak lurus beraturan di Fisika.
+
+Apakah Anda membutuhkan contoh soal latihan turunan atau limit dengan angka-angka di atas? Ketik pertanyaan Anda untuk melanjutkan!`;
+    }
+
+    // 2. Quiz-specific queries or explicitly requested kuis
     if (tab === "quiz" || lower.includes("quiz") || lower.includes("kuis") || lower.includes("soal")) {
       return `### 📝 Kuis Evaluasi Mandiri: Termodinamika & Fisika SMA
       
@@ -63,6 +122,7 @@ export const AIWorkspace: React.FC<AIWorkspaceProps> = ({
    *Kunci Jawaban:* Berdasarkan rumusan Kelvin-Planck pada Hukum II Termodinamika, tidak mungkin membuat suatu mesin yang menyerap kalor dari reservoir panas dan mengubah seluruh kalor tersebut menjadi usaha murni tanpa membuang sebagian kalor ke reservoir dingin. Oleh karena itu, efisiensi selalu kurang dari 100%.`;
     }
 
+    // 3. Planner queries
     if (tab === "planner" || lower.includes("plan") || lower.includes("jadwal") || lower.includes("rencana")) {
       return `### 📅 AI Study Planner: Agenda Belajar Mandiri Personal (XI-12)
       
@@ -82,50 +142,18 @@ export const AIWorkspace: React.FC<AIWorkspaceProps> = ({
     *   *Fokus:* Mereview rangkuman harian di portofolio digital dan mendiskusikan bagian sulit dengan teman piket kelompok belajar.`;
     }
 
-    if (tab === "reflection" || lower.includes("refleksi") || lower.includes("reflection") || lower.includes("gaya gesek")) {
-      return `### 🧠 Evaluasi Refleksi Jurnal Belajar Siswa
-      
-**Skor Apresiasi Keterbukaan Belajar: 92/100**
-*Diulas oleh Konselor Pembelajaran AI SMAN 1 Nagreg*
-
-**Masukan & Pembahasan Materi (Gaya Gesek Statis vs Kinetis):**
-1.  **Gaya Gesek Statis ($f_s$):** Bekerja saat benda masih dalam keadaan *diam* hingga sesaat sebelum bergerak. Nilainya bervariasi dari nol hingga nilai maksimumnya ($f_{s\\text{ max}} = \\mu_s \\cdot N$).
-2.  **Gaya Gesek Kinetis ($f_k$):** Bekerja saat benda sudah *bergerak*. Nilainya konstan ($f_k = \\mu_k \\cdot N$). Ingat bahwa $\\mu_s$ selalu lebih besar daripada $\\mu_k$.
-3.  **Kasus Bidang Miring:**
-    Gaya pendorong benda ke bawah bidang miring adalah gaya sejajar bidang:
-    $$F_{\\text{turun}} = m \\cdot g \\cdot \\sin(\\theta)$$
-    Sedangkan Gaya normal adalah:
-    $$N = m \\cdot g \\cdot \\cos(\\theta)$$
-    *   Jika $m \\cdot g \\cdot \\sin(\\theta) \\le f_{s\\text{ max}}$, benda tetap diam (gaya gesek yang bekerja sama dengan $m \\cdot g \\cdot \\sin(\\theta)$).
-    *   Jika $m \\cdot g \\cdot \\sin(\\theta) > f_{s\\text{ max}}$, benda bergerak meluncur ke bawah (gaya gesek yang bekerja adalah gaya gesek kinetis $f_k$).
-
-**Tips Pembelajaran Mandiri:**
-Cobalah menggambar diagram gaya bebas (*free-body diagram*) terlebih dahulu sebelum menuliskan persamaan matematika. Visualisasi membantu mengidentifikasi sudut $\\theta$ dengan akurat!`;
-    }
-
-    if (tab === "summary" || lower.includes("summary") || lower.includes("rangkum") || lower.includes("ringkas")) {
-      return `### 📖 AI Lesson Summary: Ringkasan Sosiologi SMA
-      
-**Topik: Konflik Sosial, Diferensiasi, dan Integrasi Masyarakat (Kurikulum Merdeka)**
-*Dibuat oleh AI Asisten Akademik Kurikulum Nasional*
-
-#### 1. Esensi Konflik Sosial
-*   **Definisi:** Benturan kepentingan, nilai, atau tujuan antara dua pihak atau lebih untuk menyingkirkan pihak lawan.
-*   **Faktor Pemicu:** Perbedaan individu, primordialisme berlebih, kesenjangan ekonomi, perubahan sosial yang terlalu cepat.
-*   **Dampak Positif:** Memperkuat solidaritas internal kelompok (*in-group solidarity*), mendorong perubahan sosial konstruktif.
-
-#### 2. Dinamika Integrasi Sosial
-*   **Definisi:** Upaya menyatukan berbagai kelompok sosial yang terfragmentasi dalam satu kesatuan nasional yang utuh.
-*   **Bentuk Integrasi:**
-    *   *Integrasi Normatif:* Disatukan oleh norma sosial bersama (Contoh: Semboyan Bhinneka Tunggal Ika).
-    *   *Integrasi Fungsional:* Terbentuk karena ketergantungan fungsi kerja antarkelompok.
-    *   *Integrasi Koersif:* Terbentuk karena paksaan atau kekuasaan penguasa hukum.
-
-#### 3. Tips Mengerjakan Esai Ujian
-Fokus pada contoh sosiologis konkret di lingkungan sekitar (seperti konflik gotong royong warga, integrasi rukun tetangga, dll.) untuk mendapatkan skor analisis maksimum dari guru pemeriksa.`;
-    }
-
-    if (lower.includes("mitosis") || lower.includes("meiosis") || lower.includes("sel") || lower.includes("tabel") || tab === "chatbot") {
+    // 4. Biology / Genetics
+    if (
+      lower.includes("biologi") || 
+      lower.includes("sel") || 
+      lower.includes("organel") || 
+      lower.includes("mitosis") || 
+      lower.includes("meiosis") || 
+      lower.includes("hewan") || 
+      lower.includes("tumbuhan") || 
+      lower.includes("kromosom") ||
+      lower.includes("gamet")
+    ) {
       return `### 🔬 Pembahasan Sel: Mitosis vs Meiosis (Tanya AI Guru)
 
 Berikut adalah ringkasan perbedaan mendasar antara pembelahan sel **Mitosis** dan **Meiosis** dalam bentuk tabel perbandingan kurikulum SMA Kelas XI:
@@ -148,34 +176,160 @@ Berikut adalah ringkasan perbedaan mendasar antara pembelahan sel **Mitosis** da
 Semoga penjelasan tabel ini membantu pemahaman tugas akademismu!`;
     }
 
-    return `### 💡 Solusi Pembahasan Homework Helper: Hukum Hooke & Elastisitas Pegas
-      
-**Pertanyaan/Topik:** Cara Kerja Hukum Hooke dan Modulus Elastisitas Pegas Lengkap.
+    // 5. Chemistry / Compounds
+    if (
+      lower.includes("kimia") || 
+      lower.includes("atom") || 
+      lower.includes("molekul") || 
+      lower.includes("unsur") || 
+      lower.includes("senyawa") || 
+      lower.includes("asam") || 
+      lower.includes("basa") || 
+      lower.includes("reaksi") || 
+      lower.includes("larutan") || 
+      lower.includes("ph")
+    ) {
+      return `### 🧪 Pembahasan Kimia SMA: Struktur Atom & Sifat Reaksi Larutan
+    
+*Ulasan Materi Akademis oleh Asisten Pintar AI*
 
-#### 1. Pengertian Hukum Hooke
-Hukum Hooke menerangkan bahwa jika suatu benda elastis (seperti pegas) ditarik dengan gaya tertentu, pertambahan panjang pegas tersebut akan berbanding lurus dengan gaya penariknya, selama gaya itu tidak melewati batas elastisitasnya.
-*Persamaan Matematis:*
+Kimia mempelajari komposisi, struktur, sifat, dan perubahan materi. Berikut adalah konsep fundamental yang relevan dengan pertanyaan Anda:
+
+#### 1. Struktur Atom & Konfigurasi Elektron:
+Atom terdiri dari inti atom (Proton yang bermuatan positif, Neutron yang netral) dikelilingi oleh Elektron (bermuatan negatif) pada lintasan kulit atom.
+*   **Nomor Atom (Z):** Menunjukkan jumlah proton (atau elektron pada atom netral).
+*   **Nomor Massa (A):** Jumlah Proton + Jumlah Neutron.
+*   *Konfigurasi Bohr:* Pengisian elektron per kulit berdasarkan rumus $2n^2$ (Kulit K=2, L=8, M=18, dst).
+
+#### 2. Pengukuran pH Asam dan Basa:
+*   **Asam Kuat / Lemah:** Larutan dengan pH < 7. Mengubah kertas lakmus biru menjadi merah. Mengandung ion $\\text{H}^+$.
+*   **Basa Kuat / Lemah:** Larutan dengan pH > 7. Mengubah kertas lakmus merah menjadi biru. Mengandung ion $\\text{OH}^-$.
+*   **Netral:** Larutan dengan pH = 7 (seperti air murni pada suhu kamar).
+*   *Rumus pH:* 
+    $$\\text{pH} = -\\log[\\text{H}^+]$$
+    $$\\text{pOH} = -\\log[\\text{OH}^-]$$
+    $$\\text{pH} + \\text{pOH} = 14$$
+
+#### 3. Persamaan Reaksi Kimia Sederhana:
+Reaksi stoikiometri harus setara antara sisi reaktan (kiri) dengan produk (kanan) sesuai hukum kekekalan massa (Hukum Lavoisier):
+$$\\text{CH}_4 + 2\\text{O}_2 \\rightarrow \\text{CO}_2 + 2\\text{H}_2\\text{O}$$
+
+*Tips Kimia:* Hafalkan unsur-unsur golongan utama (IA sampai VIIIA) dengan bantuan singkatan jembatan keledai untuk mempermudah tebakan ikatan kovalen/ion.`;
+    }
+
+    // 6. Physics
+    if (
+      lower.includes("fisika") || 
+      lower.includes("gaya") || 
+      lower.includes("gravitasi") || 
+      lower.includes("kecepatan") || 
+      lower.includes("suhu") || 
+      lower.includes("kalor") || 
+      lower.includes("magnet") || 
+      lower.includes("listrik") ||
+      lower.includes("energi") ||
+      lower.includes("termodinamika") ||
+      lower.includes("hukum") ||
+      lower.includes("hooke") ||
+      tab === "assistant"
+    ) {
+      return `### ⚡ Pembahasan Fisika SMA: Hukum Alam, Gaya, & Energi
+    
+*Solusi Pembelajaran Interaktif Asisten WaliKelas*
+
+Berdasarkan topik yang Anda tanyakan seputar dinamika atau energi, mari kita telaah formula dasar dan aplikasi penerapannya di kelas:
+
+#### 1. Pembahasan Hukum Hooke & Elastisitas Pegas:
+Jika gaya tarik diberikan pada pegas elastis, pertambahan panjang pegas tersebut akan sebanding dengan gaya penarik selama tidak melampaui batas elastisitas:
 $$F = k \\cdot \\Delta x$$
+*   $F$ = Gaya Penarik (Newton, N)
+*   $k$ = Konstanta Pegas (N/m)
+*   $\\Delta x$ = Selisih pertambahan panjang pegas (meter, m)
 
-Di mana:
-*   $F$ = Gaya penarik atau pemulih pegas (Newton, N)
-*   $k$ = Konstanta elastisitas pegas (N/m)
-*   $\\Delta x$ = Selisih pertambahan panjang pegas ($x_{\\text{akhir}} - x_{\\text{awal}}$ dalam meter)
+#### 2. Dinamika Hukum Newton tentang Gerak:
+*   **Hukum I Newton (Inersia/Kelembaman):** $\\sum F = 0$. Benda diam cenderung tetap diam, benda bergerak lurus beraturan cenderung mempertahankan gerakannya.
+*   **Hukum II Newton (Percepatan):** $\\sum F = m \\cdot a$. Percepatan berbanding lurus dengan resultan gaya dan berbanding terbalik dengan massa benda.
+*   **Hukum III Newton (Aksi-Reaksi):** $F_{\\text{aksi}} = -F_{\\text{reaksi}}$. Setiap gaya aksi menimbulkan reaksi dengan arah berlawanan.
 
-#### 2. Modulus Elastisitas (Young)
-Modulus Young mengukur ketahanan suatu bahan terhadap regangan elastis:
-$$E = \\frac{\\text{Tegangan (Stress)}}{\\text{Regangan (Strain)}} = \\frac{F / A}{\\Delta L / L_0}$$
+#### 3. Contoh Sesi Latihan Cepat:
+Misal konstanta pegas adalah $k = 400\\text{ N/m}$. Jika ditarik dengan pertambahan panjang $\\Delta x = 0,05\\text{ m}$ ($5\\text{ cm}$), berapakah gaya yang dialami?
+$$F = k \\cdot \\Delta x = 400 \\cdot 0,05 = 20\\text{ Newton}$$
 
-Di mana:
-*   $A$ = Luas penampang ($m^2$)
-*   $L_0$ = Panjang mula-mula ($m$)
+*Tips Fisika:* Perhatikan konversi satuan ke Sistem Internasional (SI) seperti mengubah cm ke m, gram ke kg, sebelum memasukkan angka ke dalam rumus.`;
+    }
 
-#### 3. Penerapan Contoh Soal
-Jika sebuah pegas ditarik dengan gaya $20\\text{ N}$ mengalami pertambahan panjang $4\\text{ cm}$ ($0,04\\text{ m}$), hitunglah konstanta pegas tersebut!
-*Langkah Penyelesaian:*
-$$k = \\frac{F}{\\Delta x} = \\frac{20\\text{ N}}{0,04\\text{ m}} = 500\\text{ N/m}$$
+    // 7. Reflection
+    if (tab === "reflection" || lower.includes("refleksi") || lower.includes("reflection") || lower.includes("gaya gesek")) {
+      return `### 🧠 Evaluasi Refleksi Jurnal Belajar Siswa
+      
+**Skor Apresiasi Keterbukaan Belajar: 92/100**
+*Diulas oleh Konselor Pembelajaran AI SMAN 1 Nagreg*
 
-Konstanta pegas tersebut adalah sebesar **$500\\text{ N/m}$**..`;
+**Masukan & Pembahasan Materi (Gaya Gesek Statis vs Kinetis):**
+1.  **Gaya Gesek Statis ($f_s$):** Bekerja saat benda masih dalam keadaan *diam* hingga sesaat sebelum bergerak. Nilainya bervariasi dari nol hingga nilai maksimumnya ($f_{s\\text{ max}} = \\mu_s \\cdot N$).
+2.  **Gaya Gesek Kinetis ($f_k$):** Bekerja saat benda sudah *bergerak*. Nilainya konstan ($f_k = \\mu_k \\cdot N$). Ingat bahwa $\\mu_s$ selalu lebih besar daripada $\\mu_k$.
+3.  **Kasus Bidang Miring:**
+    Gaya pendorong benda ke bawah bidang miring adalah gaya sejajar bidang:
+    $$F_{\\text{turun}} = m \\cdot g \\cdot \\sin(\\theta)$$
+    Sedangkan Gaya normal adalah:
+    $$N = m \\cdot g \\cdot \\cos(\\theta)$$
+    *   Jika $m \\cdot g \\cdot \\sin(\\theta) \\le f_{s\\text{ max}}$, benda tetap diam (gaya gesek yang bekerja sama dengan $m \\cdot g \\cdot \\sin(\\theta)$).
+    *   Jika $m \\cdot g \\cdot \\sin(\\theta) > f_{s\\text{ max}}$, benda bergerak meluncur ke bawah (gaya gesek yang bekerja adalah gaya gesek kinetis $f_k$).
+
+**Tips Pembelajaran Mandiri:**
+Cobalah menggambar diagram gaya bebas (*free-body diagram*) terlebih dahulu sebelum menuliskan persamaan matematika. Visualisasi membantu mengidentifikasi sudut $\\theta$ dengan akurat!`;
+    }
+
+    // 8. Summary
+    if (tab === "summary" || lower.includes("summary") || lower.includes("rangkum") || lower.includes("ringkas") || lower.includes("sosiologi")) {
+      return `### 📖 AI Lesson Summary: Ringkasan Sosiologi SMA
+      
+**Topik: Konflik Sosial, Diferensiasi, dan Integrasi Masyarakat (Kurikulum Merdeka)**
+*Dibuat oleh AI Asisten Akademik Kurikulum Nasional*
+
+#### 1. Esensi Konflik Sosial
+*   **Definisi:** Benturan kepentingan, nilai, atau tujuan antara dua pihak atau lebih untuk menyingkirkan pihak lawan.
+*   **Faktor Pemicu:** Perbedaan individu, primordialisme berlebih, kesenjangan ekonomi, perubahan sosial yang terlalu cepat.
+*   **Dampak Positif:** Memperkuat solidaritas internal kelompok (*in-group solidarity*), mendorong perubahan sosial konstruktif.
+
+#### 2. Dinamika Integrasi Sosial
+*   **Definisi:** Upaya menyatukan berbagai kelompok sosial yang terfragmentasi dalam satu kesatuan nasional yang utuh.
+*   **Bentuk Integrasi:**
+    *   *Integrasi Normatif:* Disatukan oleh norma sosial bersama (Contoh: Semboyan Bhinneka Tunggal Ika).
+    *   *Integrasi Fungsional:* Terbentuk karena ketergantungan fungsi kerja antarkelompok.
+    *   *Integrasi Koersif:* Terbentuk karena paksaan atau kekuasaan penguasa hukum.
+
+#### 3. Tips Mengerjakan Esai Ujian
+Fokus pada contoh sosiologis konkret di lingkungan sekitar (seperti konflik gotong royong warga, integrasi rukun tetangga, dll.) untuk mendapatkan skor analisis maksimum dari guru pemeriksa.`;
+    }
+
+    // 9. Free-form Dynamic Text Generator for other inputs
+    const words = prompt.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g, "").trim().split(/\s+/).filter(w => w.length > 3);
+    const mainTopic = words.length > 0 ? words.slice(0, 3).join(" ") : "Pembelajaran Mandiri";
+
+    return `### 🤖 Asisten Akademis Pintar: Tanya Jawab Pembelajaran Bebas
+  
+*Pembahasan Topik Khusus: **"${mainTopic}"***
+*Diproses secara cerdas oleh Sistem Simulator Kelas SMAN 1 Nagreg*
+
+Terima kasih atas pertanyaan bebas yang Anda ajukan! Saya telah memproses topik Anda mengenai **"${prompt}"** dan merumuskan modul penjelasan terstruktur khusus kurikulum SMA untuk mendukung pemahaman belajar Anda:
+
+#### 1. Pengenalan Konsep Esensial
+Secara akademis, topik **"${mainTopic}"** mencakup hubungan timbal balik antara pengetahuan teoretis dan aplikasinya di kehidupan nyata. Penting bagi siswa untuk memahami:
+*   **Definisi Inti:** Pemahaman dasar teoretis dari subjek kajian terkait yang berfokus pada logika akademis.
+*   **Fungsi Utama:** Bagaimana konsep ini membantu memecahkan tantangan di dunia nyata ataupun materi ujian akhir sekolah.
+
+#### 2. Struktur Analisis Pembahasan:
+*   **Dimensi Teoretis:** Berbagai ilmuwan atau pakar menggunakan prinsip ini untuk merumuskan hukum dasar atau metodologi studi kasus.
+*   **Metode Implementasi:** Langkah demi langkah menyusun kesimpulan logis atau membedah komponen pembentuk variabel-variabel utamanya.
+*   **Hubungan Korelasi:** Korelasi erat konsep ini dengan mata pelajaran interdisipliner lainnya (seperti gabungan Matematika-Fisika atau Sejarah-Sosiologi).
+
+#### 3. Ringkasan Poin Kunci Belajar (Mnemonic & Quick Notes):
+*   **Pahami Polanya:** Jangan hanya menghafal teks secara mentah. Fokuslah pada relasi sebab-akibat dari topik **"${mainTopic}"**.
+*   **Latihan Aktif:** Cobalah menuliskan kembali ringkasan ini menggunakan kalimat orisinal Anda di Jurnal Refleksi Belajar harian kelas.
+*   **Diskusikan:** Bahas bagian yang masih abu-abu bersama tim kelompok piket belajar mandiri di kelas atau tanyakan langsung pada Wali Kelas Anda.
+
+*Saran Asisten AI:* Belajar mandiri secara terstruktur selama 15 menit setiap malam jauh lebih efektif dibandingkan belajar sistem kebut semalam sebelum ujian!`;
   };
 
   const handleAIQuery = async (customPrompt?: string) => {
