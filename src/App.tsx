@@ -293,22 +293,26 @@ export default function App() {
 
   // --- Real-time WebSocket Synchronization Connection ---
   useEffect(() => {
+    let isMounted = true;
     const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const wsUrl = `${wsProtocol}//${window.location.host}`;
-    let socket: WebSocket;
+    const wsUrl = `${wsProtocol}//${window.location.host}/api/ws-sync`;
+    let socket: WebSocket | null = null;
 
     function connect() {
+      if (!isMounted) return;
       console.log("Connecting to real-time sync server at:", wsUrl);
       socket = new WebSocket(wsUrl);
       socketRef.current = socket;
 
       socket.onopen = () => {
+        if (!isMounted) return;
         console.log("Connected to real-time sync server!");
         setIsOnline(true);
         addToast("Koneksi real-time terhubung!", "success");
       };
 
       socket.onmessage = (event) => {
+        if (!isMounted) return;
         try {
           const data = JSON.parse(event.data);
           if (data.type === "init") {
@@ -392,21 +396,27 @@ export default function App() {
       };
 
       socket.onclose = () => {
+        if (!isMounted) return;
         console.log("Real-time sync server disconnected.");
         setIsOnline(false);
-        // Attempt reconnection after 3 seconds
-        setTimeout(connect, 3000);
+        // Attempt reconnection after 5 seconds to reduce aggressive polling
+        setTimeout(() => {
+          if (isMounted) connect();
+        }, 5000);
       };
 
       socket.onerror = (err) => {
-        console.error("WebSocket error:", err);
-        socket.close();
+        console.error("WebSocket connection issue:", err);
+        if (socket) {
+          socket.close();
+        }
       };
     }
 
     connect();
 
     return () => {
+      isMounted = false;
       if (socket) {
         socket.close();
       }

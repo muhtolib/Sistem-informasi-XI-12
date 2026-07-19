@@ -237,11 +237,22 @@ async function startServer() {
     console.log(`Server running on http://localhost:${PORT}`);
   });
 
-  // Setup WebSocket Server for online real-time sync
-  const wss = new WebSocketServer({ server });
+  // Setup WebSocket Server for online real-time sync with noServer mode
+  const wss = new WebSocketServer({ noServer: true });
+
+  server.on("upgrade", (request, socket, head) => {
+    const url = new URL(request.url || "", `http://${request.headers.host || "localhost"}`);
+    if (url.pathname === "/api/ws-sync") {
+      wss.handleUpgrade(request, socket, head, (ws) => {
+        wss.emit("connection", ws, request);
+      });
+    } else {
+      // Allow other websocket handlers (like Vite dev server) to upgrade their connections
+    }
+  });
 
   wss.on("connection", (ws) => {
-    console.log("Client connected to real-time sync server");
+    console.log("Client connected to real-time sync server on /api/ws-sync");
 
     // Send the current centralized state immediately on connection
     ws.send(JSON.stringify({
